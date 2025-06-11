@@ -32,6 +32,7 @@ public abstract class Entity {
     private int stealth;
     private int gold;
     private double damage = 30;
+    private double magicDamage = 0;
     private double critChance = 0.0;
     private int armour;
     private String weapon = "hands";
@@ -187,8 +188,17 @@ public abstract class Entity {
         return weapon;
     }
 
+    public double getMagicDamage() {
+        return magicDamage;
+    }
+
+    public void setMagicDamage(double magicDamage) {
+        this.magicDamage = magicDamage;
+    }
+
     public Map<String, String> equipItem(EquipmentLocation place, Item item) {
         double oldDamage = this.damage;
+        double oldMagicDamage = this.magicDamage;
         int oldArmour = this.armour;
         if (place == null) {
             place = item.getPosition();
@@ -210,48 +220,35 @@ public abstract class Entity {
             unequipItem(bothArms);
         }
         equipment.put(place, item);
+        // Update weapon field for weapon type items
+        if (item.getType().startsWith("weapon") || place == EquipmentLocation.BOTH_HANDS 
+            || place == EquipmentLocation.LEFT_HAND || place == EquipmentLocation.RIGHT_HAND) {
+            this.weapon = item.getId();
+        }
         removeItemFromStorage(item);
-        Map<String, String> result = new HashMap<String, String>();
-        switch (item.getId().charAt(0)) {
-            case 'w': {
-                this.weapon = item.getId();
-                this.damage += item.getProperty("damage");
-                double diffDamage = this.damage - oldDamage;
-                result.put("damage", String.valueOf(diffDamage));
-                break;
-            }
-            case 'a': {
-                this.armour += item.getProperty("armour");
-                int diffArmour = this.armour - oldArmour;
-                result.put("armour", String.valueOf(diffArmour));
-                break;
-            }
-            case 'p': {
-                if (item.containsProperty("healthMax")) {
-                    int healthOld = this.getHealth();
-                    this.healthMax += item.getProperty("healthMax");
-                    this.health += item.getProperty("health");
-                    this.health = (this.health > this.healthMax) ? this.healthMax : this.health;
-                    int healthNew = this.health;
-                    unequipItem(item); // One use only
-                    removeItemFromStorage(item);
-                    if (healthNew != healthOld) {
-                        result.put("health", String.valueOf(health - healthOld));
-                    } else {
-                        result.put("health", String.valueOf(item.getProperty("healthMax")));
+        Map<String, Integer> stats = item.getProperties();
+        Map<String, String> result = new HashMap<>();
+        if (stats != null) {
+            for (Map.Entry<String, Integer> stat : stats.entrySet()) {
+                String key = stat.getKey();
+                int value = stat.getValue();
+                switch (key) {
+                    case "damage": {
+                        this.damage += value;
+                        result.put("damage", String.valueOf(damage - oldDamage));
+                        break;
+                    }
+                    case "magicDamage": {
+                        this.magicDamage += value;
+                        result.put("magicDamage", String.valueOf(magicDamage - oldMagicDamage));
+                        break;
+                    }
+                    case "armour": {
+                        this.armour += value;
+                        result.put("armour", String.valueOf(armour - oldArmour));
+                        break;
                     }
                 }
-                break;
-            }
-            case 'f': {
-                int healthOld = this.getHealth();
-                this.health += item.getProperty("health");
-                this.health = (this.health > this.healthMax) ? this.healthMax
-                        : this.health;
-                unequipItem(item); // One use only
-                removeItemFromStorage(item);
-                result.put("health", String.valueOf(health - healthOld));
-                break;
             }
         }
         return result;
@@ -269,27 +266,45 @@ public abstract class Entity {
     }
 
     public Map<String, String> unequipItem(Item item) {
-        for (EquipmentLocation key : equipment.keySet()) {
-            if (item.equals(equipment.get(key))) {
-                equipment.put(key, null);
+        double oldDamage = this.damage;
+        double oldMagicDamage = this.magicDamage;
+        int oldArmour = this.armour;
+        Map<String, Integer> stats = item.getProperties();
+        Map<String, String> result = new HashMap<>();
+        if (stats != null) {
+            for (Map.Entry<String, Integer> stat : stats.entrySet()) {
+                String key = stat.getKey();
+                int value = stat.getValue();
+                switch (key) {
+                    case "damage": {
+                        this.damage -= value;
+                        result.put("damage", String.valueOf(damage - oldDamage));
+                        break;
+                    }
+                    case "magicDamage": {
+                        this.magicDamage -= value;
+                        result.put("magicDamage", String.valueOf(magicDamage - oldMagicDamage));
+                        break;
+                    }
+                    case "armour": {
+                        this.armour -= value;
+                        result.put("armour", String.valueOf(armour - oldArmour));
+                        break;
+                    }
+                }
+            }
+        }
+        EquipmentLocation place = item.getPosition();
+        if (equipment.get(place) == item) {
+            equipment.remove(place);
+            // Reset weapon field if unequipping a weapon
+            if (item.getType().startsWith("weapon") || place == EquipmentLocation.BOTH_HANDS 
+                || place == EquipmentLocation.LEFT_HAND || place == EquipmentLocation.RIGHT_HAND) {
+                this.weapon = "hands";
             }
         }
         if (!item.equals(itemRepo.getItem("hands"))) {
             addItemToStorage(item);
-        }
-        Map<String, String> result = new HashMap<String, String>();
-        if (item.containsProperty("damage")) {
-            double oldDamage = damage;
-            weapon = "hands";
-            damage -= item.getProperty("damage");
-            double diffDamage = damage - oldDamage;
-            result.put("damage", String.valueOf(diffDamage));
-        } 
-        if (item.containsProperty("armour")) {
-            int oldArmour = armour;
-            armour -= item.getProperty("armour");
-            int diffArmour = armour - oldArmour;
-            result.put("armour", String.valueOf(diffArmour));
         }
         return result;
     }

@@ -25,6 +25,11 @@ public class MonsterFactory {
                     return getCaveMonster(player.getLevel());
                 case PLAINS:
                     return getPlainsMonster(player.getLevel());
+                case TOWER:
+                case GARDEN:
+                case LABORATORY:
+                case SHOP:
+                    return null; // 这些是安全区域，不生成怪物
                 default: // any non-hostile location
                     return null;
             }

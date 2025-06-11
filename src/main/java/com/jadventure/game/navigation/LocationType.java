@@ -13,5 +13,9 @@ public enum LocationType {
     WALL,
     ROAD,
 	CAVE,
-    STAIRS;
+    STAIRS,
+    TOWER,
+    GARDEN,
+    LABORATORY,
+    SHOP;
 }

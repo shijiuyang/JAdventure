@@ -273,6 +273,98 @@
 		"weight": "3",
         "value": "0"
       }
+    },
+    
+    "wmst1": {
+      "type": "weapon",
+      "name": "magic staff",
+      "description": "A mysterious magic staff that can shoot magical projectiles",
+      "position": "bothHands",
+      "level": 2,
+      "properties": {
+        "damage": "+8",
+        "magicDamage": "+5",
+        "weight": "3",
+        "value": "100"
+      }
+    },
+    "amro1": {
+      "type": "armour",
+      "name": "magic robe",
+      "description": "A starlit magic robe that provides magical protection",
+      "position": "chest",
+      "level": 2,
+      "properties": {
+        "armour": "+6",
+        "magicResist": "+5",
+        "weight": "4",
+        "value": "120"
+      }
+    },
+    "amha1": {
+      "type": "armour",
+      "name": "magic hat",
+      "description": "A typical wizard's hat that enhances magical power",
+      "position": "head",
+      "level": 2,
+      "properties": {
+        "armour": "+3",
+        "magicPower": "+3",
+        "weight": "1",
+        "value": "80"
+      }
+    },
+    "pman1": {
+      "type": "potion",
+      "name": "mana potion",
+      "description": "A blue potion that restores the caster's mana",
+      "position": "mouth",
+      "level": 1,
+      "properties": {
+        "mana": "+30",
+        "weight": "1",
+        "value": "25"
+      }
+    },
+    "pfir1": {
+      "type": "potion",
+      "name": "fire resistance potion",
+      "description": "A red potion that temporarily provides fire resistance",
+      "position": "mouth",
+      "level": 2,
+      "properties": {
+        "fireResist": "+10",
+        "duration": "300",
+        "weight": "1",
+        "value": "45"
+      }
+    },
+    "fapp1": {
+      "type": "food",
+      "name": "magic apple",
+      "description": "A golden apple that restores both health and mana when eaten",
+      "position": "mouth",
+      "level": 2,
+      "properties": {
+        "health": "+15",
+        "mana": "+15",
+        "weight": "1",
+        "value": "30"
+      }
+    },
+    "fber1": {
+      "type": "food",
+      "name": "magic berries",
+      "description": "a pair of magic berries",
+      "position": "mouth",
+      "level": 1,
+      "properties": {
+        "health": "+5",
+        "speed": "+2",
+        "duration": "120",
+        "weight": "1",
+        "value": "20"
+      }
     }
   }
 }

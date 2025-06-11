@@ -96,10 +96,22 @@ public class Item {
     }
 
     public void display() {
-        QueueProvider.offer("Name: " + name +
-                "\nDescription: " + description + "\nLevel: " + level);
-        for (Map.Entry<String, Integer> entry : properties.entrySet()) {
-            QueueProvider.offer(entry.getKey() + ": " + entry.getValue());
+        QueueProvider.offer("\n" + "Name: " + name);
+        QueueProvider.offer("Type: " + type);
+        QueueProvider.offer("Description: " + description);
+        QueueProvider.offer("Level: " + level);
+        QueueProvider.offer("Position: " + (position == null ? "None" : position));
+        if (!properties.isEmpty()) {
+            QueueProvider.offer("Properties:");
+            for (Map.Entry<String, Integer> entry : properties.entrySet()) {
+                String key = entry.getKey();
+                Integer value = entry.getValue();
+                if (value >= 0) {
+                    QueueProvider.offer("\t" + key + ": +" + value);
+                } else {
+                    QueueProvider.offer("\t" + key + ": " + value);
+                }
+            }
         }
     }
 

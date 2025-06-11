@@ -57,8 +57,21 @@ public class Player extends Entity {
     /** Player type */
     private String type;
     private static HashMap<String, Integer>characterLevels = new HashMap<String, Integer>();
+    // 添加魔法相关属性
+    private int mana;
+    private int manaMax;
+    private int magicPower;
+    private int magicResist;
+    private int fireResist;
+    private int speed;
 
     public Player() {
+        this.mana = 100;
+        this.manaMax = 100;
+        this.magicPower = 0;
+        this.magicResist = 0;
+        this.fireResist = 0;
+        this.speed = 1;
     }
 
     protected static void setUpCharacterLevels() {
@@ -507,5 +520,133 @@ public class Player extends Entity {
         List<Item> searchEquipment = searchEquipment(item.getName(), getEquipment());
         List<Item> searchStorage = searchItem(item.getName(), getStorage());
         return !(searchEquipment.size() == 0 && searchStorage.size() == 0);
+    }
+
+    // 添加getter和setter方法
+    public int getMana() {
+        return this.mana;
+    }
+
+    public void setMana(int mana) {
+        this.mana = mana;
+        if (this.mana > this.manaMax) {
+            this.mana = this.manaMax;
+        }
+    }
+
+    public int getManaMax() {
+        return this.manaMax;
+    }
+
+    public void setManaMax(int manaMax) {
+        this.manaMax = manaMax;
+    }
+
+    public int getMagicPower() {
+        return this.magicPower;
+    }
+
+    public void setMagicPower(int magicPower) {
+        this.magicPower = magicPower;
+    }
+
+    public int getMagicResist() {
+        return this.magicResist;
+    }
+
+    public void setMagicResist(int magicResist) {
+        this.magicResist = magicResist;
+    }
+
+    public int getFireResist() {
+        return this.fireResist;
+    }
+
+    public void setFireResist(int fireResist) {
+        this.fireResist = fireResist;
+    }
+
+    public int getSpeed() {
+        return this.speed;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    }
+
+    // 修改装备效果计算方法
+    @Override
+    public Map<String, String> equipItem(EquipmentLocation place, Item item) {
+        Map<String, String> result = super.equipItem(place, item);
+        Map<String, Integer> properties = item.getProperties();
+        for (Map.Entry<String, Integer> entry : properties.entrySet()) {
+            String key = entry.getKey();
+            int value = entry.getValue();
+            switch (key) {
+                case "mana":
+                    setMana(getMana() + value);
+                    break;
+                case "manaMax":
+                    setManaMax(getManaMax() + value);
+                    break;
+                case "magicPower":
+                    setMagicPower(getMagicPower() + value);
+                    break;
+                case "magicResist":
+                    setMagicResist(getMagicResist() + value);
+                    break;
+                case "fireResist":
+                    setFireResist(getFireResist() + value);
+                    break;
+                case "speed":
+                    setSpeed(getSpeed() + value);
+                    break;
+            }
+        }
+        return result;
+    }
+
+    // 修改卸下装备效果计算方法
+    @Override
+    public Map<String, String> unequipItem(Item item) {
+        Map<String, String> result = super.unequipItem(item);
+        Map<String, Integer> properties = item.getProperties();
+        for (Map.Entry<String, Integer> entry : properties.entrySet()) {
+            String key = entry.getKey();
+            int value = entry.getValue();
+            switch (key) {
+                case "mana":
+                    setMana(getMana() - value);
+                    break;
+                case "manaMax":
+                    setManaMax(getManaMax() - value);
+                    break;
+                case "magicPower":
+                    setMagicPower(getMagicPower() - value);
+                    break;
+                case "magicResist":
+                    setMagicResist(getMagicResist() - value);
+                    break;
+                case "fireResist":
+                    setFireResist(getFireResist() - value);
+                    break;
+                case "speed":
+                    setSpeed(getSpeed() - value);
+                    break;
+            }
+        }
+        return result;
+    }
+
+    // 修改状态显示方法
+    @Override
+    public void printEquipment() {
+        super.printEquipment();
+        QueueProvider.offer("\nMagic Stats:");
+        QueueProvider.offer("Mana: " + getMana() + "/" + getManaMax());
+        QueueProvider.offer("Magic Power: " + getMagicPower());
+        QueueProvider.offer("Magic Resist: " + getMagicResist());
+        QueueProvider.offer("Fire Resist: " + getFireResist());
+        QueueProvider.offer("Speed: " + getSpeed());
     }
 }
